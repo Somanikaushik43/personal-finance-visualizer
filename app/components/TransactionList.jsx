@@ -1,23 +1,35 @@
 'use client';
-import axios from 'axios';
+import React from 'react';
 
 export default function TransactionList({ transactions, onDelete }) {
-  const handleDelete = async (id) => {
-    await axios.delete(`/api/transactions?id=${id}`);
-    onDelete(id);
-  };
-
   return (
-    <ul className="space-y-2 p-4">
-      {transactions.map((txn) => (
-        <li key={txn._id} className="flex justify-between items-center border p-2 rounded">
-          <div>
-            <p>{txn.description}</p>
-            <small>{new Date(txn.date).toDateString()} — ₹{txn.amount}</small>
+    <div className="space-y-4">
+      {transactions.length === 0 ? (
+        <p className="text-gray-500">No transactions yet.</p>
+      ) : (
+        transactions.map((txn) => (
+          <div
+            key={txn._id}
+            className="flex justify-between items-center p-4 rounded bg-gray-100 dark:bg-gray-800"
+          >
+            <div>
+              <p className="font-bold text-lg">₹{txn.amount}</p>
+              <p>{txn.description}</p>
+              <span className={`text-xs font-medium ${txn.category === "Food" ? "text-green-600" : "text-blue-600"}`}>
+                {txn.category}
+              </span>
+              {/* <p className="text-xs">{new Date(txn.date).toLocaleDateString()}</p> */}
+            </div>
+            <button
+              onClick={() => onDelete(txn.id)}
+              className="text-red-500 hover:underline"
+            >
+              Delete
+            </button>
           </div>
-          <button onClick={() => handleDelete(txn._id)} className="text-red-500">X</button>
-        </li>
-      ))}
-    </ul>
+        ))
+      )}
+    </div>
   );
 }
+
