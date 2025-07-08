@@ -19,7 +19,7 @@ export async function POST(request) {
   return NextResponse.json(newBudget);
 }
 
-// PUT to update a budget by category
+// PUT (update) a budget by category
 export async function PUT(request) {
   const body = await request.json();
   const updatedBudget = await prisma.budget.updateMany({
@@ -27,4 +27,15 @@ export async function PUT(request) {
     data: { limit: body.limit },
   });
   return NextResponse.json(updatedBudget);
+}
+// DELETE a budget by category
+export async function DELETE(request) {
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get('category');
+
+  await prisma.budget.deleteMany({
+    where: { category },
+  });
+
+  return NextResponse.json({ message: 'Budget deleted successfully' });
 }
