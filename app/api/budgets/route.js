@@ -1,27 +1,30 @@
-import { connectDB } from '@/lib/connectDB';
-import { Budget } from '@/models/Budget';
+import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
+// GET all budgets
 export async function GET() {
-  await connectDB();
-  const budgets = await Budget.find();
+  const budgets = await prisma.budget.findMany();
   return NextResponse.json(budgets);
 }
 
+// POST a new budget
 export async function POST(request) {
-  await connectDB();
   const body = await request.json();
-  const newBudget = await Budget.create(body);
+  const newBudget = await prisma.budget.create({
+    data: {
+      category: body.category,
+      limit: body.limit,
+    },
+  });
   return NextResponse.json(newBudget);
 }
 
+// PUT to update a budget by category
 export async function PUT(request) {
-  await connectDB();
   const body = await request.json();
-  const updatedBudget = await Budget.findOneAndUpdate(
-    { category: body.category },
-    { amount: body.amount },
-    { new: true }
-  );
+  const updatedBudget = await prisma.budget.updateMany({
+    where: { category: body.category },
+    data: { limit: body.limit },
+  });
   return NextResponse.json(updatedBudget);
 }
